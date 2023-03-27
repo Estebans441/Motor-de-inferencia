@@ -6,26 +6,26 @@ sentencia   : ALL ID sentencia      #Forall
             | exp                   #Expr
             ;
 
-exp         : '(' exp ')'           #Paren
-            | exp BICOND exp        #Bicondicional
-            | exp IMPLY exp         #Cond
+exp         : exp BICOND exp        #Bicond
+            | exp IMPLY exp         #Impl
+            | '(' exp ')'           #Paren
             | exp AND exp           #And
             | exp OR exp            #Or
             | NOT exp               #Neg
             | predicado             #Pred
             ;
 
-predicado : PRED '(' (ID | PRED) ')'            #Preduni
-          | PRED '('(ID|PRED)','(ID|PRED)')'    #Predmult
+predicado : PRED '(' (ID | PRED) ')'
+          | PRED '('(ID|PRED)','(ID|PRED)')'
           ;
 
 /* Definición de tokens */
-ALL : '∀'|'all' ;
-EXISTS : '∃'|'exists' ;
+ALL : '∀'|'/all' ;
+EXISTS : '∃'|'/exists' ;
 IMPLY : '=>' ;
 BICOND : '<=>';
-OR : '∨'|'OR' ;
-AND : '∧'|'AND' ;
+OR : '∨'|'/or' ;
+AND : '∧'|'/and' ;
 NOT : '-' ;
 ID : [a-z] ;
 PRED : [A-Z][a-zA-Z]* ;

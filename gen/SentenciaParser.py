@@ -1,4 +1,4 @@
-# Generated from C:/Users/esteb/Documents/Trabajos U/Intro IA/Proyecto2/gen\Sentencia.g4 by ANTLR 4.11.1
+# Generated from C:/Users/esteb/Documents/Trabajos U/Intro IA/Motor-de-inferencia/gen\Sentencia.g4 by ANTLR 4.11.1
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -19,9 +19,9 @@ def serializedATN():
         14,3,0,0,0,12,14,3,2,1,0,13,6,1,0,0,0,13,9,1,0,0,0,13,12,1,0,0,0,
         14,1,1,0,0,0,15,16,6,1,-1,0,16,17,5,1,0,0,17,18,3,2,1,0,18,19,5,
         2,0,0,19,24,1,0,0,0,20,21,5,10,0,0,21,24,3,2,1,2,22,24,3,4,2,0,23,
-        15,1,0,0,0,23,20,1,0,0,0,23,22,1,0,0,0,24,39,1,0,0,0,25,26,10,6,
-        0,0,26,27,5,7,0,0,27,38,3,2,1,7,28,29,10,5,0,0,29,30,5,6,0,0,30,
-        38,3,2,1,6,31,32,10,4,0,0,32,33,5,9,0,0,33,38,3,2,1,5,34,35,10,3,
+        15,1,0,0,0,23,20,1,0,0,0,23,22,1,0,0,0,24,39,1,0,0,0,25,26,10,7,
+        0,0,26,27,5,7,0,0,27,38,3,2,1,8,28,29,10,6,0,0,29,30,5,6,0,0,30,
+        38,3,2,1,7,31,32,10,4,0,0,32,33,5,9,0,0,33,38,3,2,1,5,34,35,10,3,
         0,0,35,36,5,8,0,0,36,38,3,2,1,4,37,25,1,0,0,0,37,28,1,0,0,0,37,31,
         1,0,0,0,37,34,1,0,0,0,38,41,1,0,0,0,39,37,1,0,0,0,39,40,1,0,0,0,
         40,3,1,0,0,0,41,39,1,0,0,0,42,43,5,12,0,0,43,44,5,1,0,0,44,45,7,
@@ -41,7 +41,7 @@ class SentenciaParser ( Parser ):
     sharedContextCache = PredictionContextCache()
 
     literalNames = [ "<INVALID>", "'('", "')'", "','", "<INVALID>", "<INVALID>", 
-                     "'=>'", "'<=>'" ]
+                     "'=>'", "'<=>'", "<INVALID>", "<INVALID>", "'-'" ]
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "ALL", "EXISTS", "IMPLY", "BICOND", "OR", "AND", "NOT", 
@@ -235,7 +235,7 @@ class SentenciaParser ( Parser ):
                 return visitor.visitChildren(self)
 
 
-    class CondContext(ExpContext):
+    class ImplContext(ExpContext):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a SentenciaParser.ExpContext
             super().__init__(parser)
@@ -251,8 +251,8 @@ class SentenciaParser ( Parser ):
             return self.getToken(SentenciaParser.IMPLY, 0)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCond" ):
-                return visitor.visitCond(self)
+            if hasattr( visitor, "visitImpl" ):
+                return visitor.visitImpl(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -275,28 +275,6 @@ class SentenciaParser ( Parser ):
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitOr" ):
                 return visitor.visitOr(self)
-            else:
-                return visitor.visitChildren(self)
-
-
-    class BicondicionalContext(ExpContext):
-
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a SentenciaParser.ExpContext
-            super().__init__(parser)
-            self.copyFrom(ctx)
-
-        def exp(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(SentenciaParser.ExpContext)
-            else:
-                return self.getTypedRuleContext(SentenciaParser.ExpContext,i)
-
-        def BICOND(self):
-            return self.getToken(SentenciaParser.BICOND, 0)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitBicondicional" ):
-                return visitor.visitBicondicional(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -353,6 +331,28 @@ class SentenciaParser ( Parser ):
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitParen" ):
                 return visitor.visitParen(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class BicondContext(ExpContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a SentenciaParser.ExpContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def exp(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(SentenciaParser.ExpContext)
+            else:
+                return self.getTypedRuleContext(SentenciaParser.ExpContext,i)
+
+        def BICOND(self):
+            return self.getToken(SentenciaParser.BICOND, 0)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitBicond" ):
+                return visitor.visitBicond(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -414,29 +414,29 @@ class SentenciaParser ( Parser ):
                     self._errHandler.sync(self)
                     la_ = self._interp.adaptivePredict(self._input,2,self._ctx)
                     if la_ == 1:
-                        localctx = SentenciaParser.BicondicionalContext(self, SentenciaParser.ExpContext(self, _parentctx, _parentState))
+                        localctx = SentenciaParser.BicondContext(self, SentenciaParser.ExpContext(self, _parentctx, _parentState))
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_exp)
                         self.state = 25
-                        if not self.precpred(self._ctx, 6):
+                        if not self.precpred(self._ctx, 7):
                             from antlr4.error.Errors import FailedPredicateException
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 6)")
+                            raise FailedPredicateException(self, "self.precpred(self._ctx, 7)")
                         self.state = 26
                         self.match(SentenciaParser.BICOND)
                         self.state = 27
-                        self.exp(7)
+                        self.exp(8)
                         pass
 
                     elif la_ == 2:
-                        localctx = SentenciaParser.CondContext(self, SentenciaParser.ExpContext(self, _parentctx, _parentState))
+                        localctx = SentenciaParser.ImplContext(self, SentenciaParser.ExpContext(self, _parentctx, _parentState))
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_exp)
                         self.state = 28
-                        if not self.precpred(self._ctx, 5):
+                        if not self.precpred(self._ctx, 6):
                             from antlr4.error.Errors import FailedPredicateException
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 5)")
+                            raise FailedPredicateException(self, "self.precpred(self._ctx, 6)")
                         self.state = 29
                         self.match(SentenciaParser.IMPLY)
                         self.state = 30
-                        self.exp(6)
+                        self.exp(7)
                         pass
 
                     elif la_ == 3:
@@ -486,59 +486,27 @@ class SentenciaParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-
-        def getRuleIndex(self):
-            return SentenciaParser.RULE_predicado
-
-     
-        def copyFrom(self, ctx:ParserRuleContext):
-            super().copyFrom(ctx)
-
-
-
-    class PredmultContext(PredicadoContext):
-
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a SentenciaParser.PredicadoContext
-            super().__init__(parser)
-            self.copyFrom(ctx)
-
         def PRED(self, i:int=None):
             if i is None:
                 return self.getTokens(SentenciaParser.PRED)
             else:
                 return self.getToken(SentenciaParser.PRED, i)
+
         def ID(self, i:int=None):
             if i is None:
                 return self.getTokens(SentenciaParser.ID)
             else:
                 return self.getToken(SentenciaParser.ID, i)
 
+        def getRuleIndex(self):
+            return SentenciaParser.RULE_predicado
+
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitPredmult" ):
-                return visitor.visitPredmult(self)
+            if hasattr( visitor, "visitPredicado" ):
+                return visitor.visitPredicado(self)
             else:
                 return visitor.visitChildren(self)
 
-
-    class PreduniContext(PredicadoContext):
-
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a SentenciaParser.PredicadoContext
-            super().__init__(parser)
-            self.copyFrom(ctx)
-
-        def PRED(self, i:int=None):
-            if i is None:
-                return self.getTokens(SentenciaParser.PRED)
-            else:
-                return self.getToken(SentenciaParser.PRED, i)
-        def ID(self):
-            return self.getToken(SentenciaParser.ID, 0)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitPreduni" ):
-                return visitor.visitPreduni(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -552,7 +520,6 @@ class SentenciaParser ( Parser ):
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,4,self._ctx)
             if la_ == 1:
-                localctx = SentenciaParser.PreduniContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 42
                 self.match(SentenciaParser.PRED)
@@ -570,7 +537,6 @@ class SentenciaParser ( Parser ):
                 pass
 
             elif la_ == 2:
-                localctx = SentenciaParser.PredmultContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 46
                 self.match(SentenciaParser.PRED)
@@ -619,11 +585,11 @@ class SentenciaParser ( Parser ):
 
     def exp_sempred(self, localctx:ExpContext, predIndex:int):
             if predIndex == 0:
-                return self.precpred(self._ctx, 6)
+                return self.precpred(self._ctx, 7)
          
 
             if predIndex == 1:
-                return self.precpred(self._ctx, 5)
+                return self.precpred(self._ctx, 6)
          
 
             if predIndex == 2:

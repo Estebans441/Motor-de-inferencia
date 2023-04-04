@@ -15,8 +15,8 @@ exp         : exp BICOND exp        #Bicond
             | predicado             #Pred
             ;
 
-predicado : PRED '(' (ID | PRED) ')'
-          | PRED '('(ID|PRED)','(ID|PRED)')'
+predicado : PRED '(' op=(ID | PRED) ')'        #Uni
+          | PRED '('op=(ID|PRED)','op=(ID|PRED)')'#Mult
           ;
 
 /* Definición de tokens */

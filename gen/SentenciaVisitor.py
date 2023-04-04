@@ -12,13 +12,13 @@ def neg(sentencia):
     s = ""
     for i in range(0, len(a)):
         if i < len(a) - 1:
-            a[i] = a[i] + " * "
+            a[i] = a[i] + "*"
         b = a[i].split("∨")
         for j in range(0, len(b)):
             b[j] = "-" + b[j]
             b[j] = b[j].replace("-(", "(-")
             if j < len(b) - 1:
-                b[j] = b[j] + " ∧ "
+                b[j] = b[j] + "∧"
             s = s + b[j].replace("*", "∨")
     s = s.replace("--", "")
     return s
@@ -27,6 +27,8 @@ def neg(sentencia):
 # This class defines a complete generic visitor for a parse tree produced by SentenciaParser.
 
 class SentenciaVisitor(ParseTreeVisitor):
+
+    predicados = []
 
     # Visit a parse tree produced by SentenciaParser#Forall.
     def visitForall(self, ctx: SentenciaParser.ForallContext):
@@ -42,13 +44,13 @@ class SentenciaVisitor(ParseTreeVisitor):
     def visitImpl(self, ctx: SentenciaParser.ImplContext):
         a = self.visit(ctx.exp(0))
         b = self.visit(ctx.exp(1))
-        return "(" + neg(a) + " ∨ " + b + ")"
+        return "(" + neg(a) + "∨" + b + ")"
 
     # Visit a parse tree produced by SentenciaParser#Bicond.
     def visitBicond(self, ctx: SentenciaParser.BicondContext):
         a = self.visit(ctx.exp(0))
         b = self.visit(ctx.exp(1))
-        return "(" + neg(a) + " ∨ " + b + ") ∧ (" + neg(b) + " ∨ " + a + ")"
+        return "(" + neg(a) + "∨" + b + ")∧(" + neg(b) + "∨" + a + ")"
 
     # Visit a parse tree produced by SentenciaParser#Expr.
     def visitExpr(self, ctx: SentenciaParser.ExprContext):
@@ -60,17 +62,17 @@ class SentenciaVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SentenciaParser#Or.
     def visitOr(self, ctx: SentenciaParser.OrContext):
-        a = self.visit(ctx.exp(0)) + " ∨ " + self.visit(ctx.exp(1))
+        a = self.visit(ctx.exp(0)) + "∨" + self.visit(ctx.exp(1))
         return a
 
     # Visit a parse tree produced by SentenciaParser#And.
     def visitAnd(self, ctx: SentenciaParser.AndContext):
-        a = self.visit(ctx.exp(0)) + " ∧ " + self.visit(ctx.exp(1))
+        a = self.visit(ctx.exp(0)) + "∧" + self.visit(ctx.exp(1))
         return a
 
     # Visit a parse tree produced by SentenciaParser#Pred.
     def visitPred(self, ctx: SentenciaParser.PredContext):
-        return ctx.getText()
+        return ctx.predicado()
 
     # Visit a parse tree produced by SentenciaParser#Paren.
     def visitParen(self, ctx: SentenciaParser.ParenContext):

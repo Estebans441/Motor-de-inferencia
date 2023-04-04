@@ -10,14 +10,16 @@ axiomas = [
     "∀x ∀y (Hombre(x) ∧ Gobernante(y) ∧ IntentaAsesinar(x, y)) => -Leal(x, y)",
     "IntentaAsesinar(Marco, Cesar)"
 ]
+
+sentencia = "Odia(x, y)"
 axiomas = [
-    "Hombre(Marco)",
-    "Pompeyano(Marco)",
+    "Hombre(x)",
+    "Pompeyano(x)",
     "∀x Pompeyano(x) => Romano(x)",
-    "Gobernante(Cesar)",
-    "∀x Romano(x) => (Leal(x, Cesar) ∨ Odia(x, Cesar))",
+    "Gobernante(y)",
+    "∀x Romano(x) => (Leal(x, y) ∨ Odia(x, y))",
     "∀x ∀y (Hombre(x) ∧ Gobernante(y) ∧ IntentaAsesinar(x, y)) => -Leal(x, y)",
-    "IntentaAsesinar(Marco, Cesar)"
+    "IntentaAsesinar(x, y)"
 ]
 
 sentencia2 = "Mata(Curiosidad, Tuna)"
@@ -30,6 +32,7 @@ axiomas2 = [
     "∀x Gato(x) => Animal(x)"
 ]
 
-axiomas_n = forma_normal_conjuntiva(axiomas)
-for x in axiomas_n:
-    print(x)
+print(refutacion(axiomas, sentencia))
+
+
+

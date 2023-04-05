@@ -38,7 +38,7 @@ class SentenciaVisitor(ParseTreeVisitor):
     # Visit a parse tree produced by SentenciaParser#Exists.
     def visitExists(self, ctx: SentenciaParser.ExistsContext):
         var: str = str(ctx.ID())
-        r: str = self.visit(ctx.sentencia()).replace("(" + var, "(" + var + "/n")
+        r: str = self.visit(ctx.sentencia()).replace("(" + var, "(" + var + "#")
         return r
 
     # Visit a parse tree produced by SentenciaParser#Impl.

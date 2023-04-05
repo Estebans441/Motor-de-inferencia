@@ -38,7 +38,7 @@ def forma_normal_conjuntiva(axiomas):
     predicados = {}
     for i in range(0, len(axiomas)):
         ap, predicados = visitar(axiomas[i])
-        ap.replace("/n", str(i + 1))
+        ap = ap.replace("#", str(i + 1))
         if ap[0] == "(":
             ap = ap[1:-1]
         axiomas_n.append(ap)

@@ -17,11 +17,10 @@ def agregar_axioma(axiomas, sentencia):
     axiomas.append(sentencia)
 
 
-# Visitor con antlr
+# Visitor con antlr que realiza una primera transformacion a fnc
 def visitar(axioma):
     axioma_n = axioma.replace('∀', '/all').replace('∃', '/exists').replace('∧', '/and').replace('∨', '/or')
     visitor = SentenciaVisitor()
-    visitor.num = 4
     fnc = visitor.visit(SentenciaParser(
         CommonTokenStream(
             SentenciaLexer(
@@ -31,6 +30,8 @@ def visitar(axioma):
 
 
 # Convertir la lista de axiomas a Forma Normal Conjuntiva.
+# La variable predicados corresponde a los predicados univariable que se encuentran y una lista de constantes que
+# pertenecen a estos. ej: Romano(Marco) -> {'Romano':['Marco']}
 def forma_normal_conjuntiva(axiomas):
     # código para convertir a FNC
     axiomas_n = []
@@ -53,11 +54,13 @@ def hay_clausulas_por_resolver(clausulas):
 def encontrar_clausulas_por_resolver(clausulas: [Clausula]):
     for i in range(0, len(clausulas)):
         for j in range(0, len(clausulas)):
+            # Si las dos cláusulas no se han elegido para resolverse
             if (not clausulas[i].resueltoCon.__contains__(clausulas[j])) and (not i == j):
                 clausulas[i].resueltoCon.append(clausulas[j])
                 clausulas[j].resueltoCon.append(clausulas[i])
                 for c1 in clausulas[i].clausulas:
                     for c2 in clausulas[j].clausulas:
+                        # Si c1 tiene un literal que niega un literal de c2
                         if c1 == neg(c2):
                             return clausulas[i], clausulas[j]
     return Clausula([]), Clausula([])
@@ -65,7 +68,7 @@ def encontrar_clausulas_por_resolver(clausulas: [Clausula]):
 
 # Generar el resultado de la resolución.
 def resolver(clausula1, clausula2):
-    # código para aplicar resolución
+    # Se busca los dos literales que se niegan para crear el resultado en el que se eliminan
     c1_n, c2_n = [], []
     for c1 in clausula1.clausulas:
         for c2 in clausula2.clausulas:
@@ -84,7 +87,7 @@ def agregar_clausula(clausulas, nueva_clausula):
 
 # Verificar si hay una cláusula nula en la lista.
 def es_clausula_nula(clausulas: [Clausula]):
-    # código para verificar si hay cláusula nula
+    # Hay cláusulas nulas si hay dos clausulas de un literal que se niegan entre si
     for c1 in clausulas:
         if len(c1.clausulas) == 1:
             for c2 in clausulas:
@@ -113,11 +116,15 @@ def unificacion(predicados, clausulas: [Clausula]):
         # Reemplazo de la variable dentro de la clausula
         copias = []
         reemplazar(reemplazos, c.clausulas, copias)
+
+        # Se agregan las clausulas con las variables unificadas si no se ha agregado ya
         for copia in copias:
             if copia != c.clausulas:
                 nuevas_clausulas.append(Clausula(copia))
     return nuevas_clausulas
 
+
+# Reemplaza una variable con sus posibles valores almacenados en el diccionario recursivamente
 def reemplazar(diccionario: {}, original: [str], copias):
     if len(diccionario) == 0:
         if not any(c == original for c in copias):
@@ -133,6 +140,8 @@ def reemplazar(diccionario: {}, original: [str], copias):
         return
 
 
+# Si se encuentra una clausula con solo un literal que define una nueva constante, se actualiza el diccionario con los
+# predicados para volver a realizar la unificacion
 def actualizar_pred(predicados, clausulas):
     for c in clausulas:
         if len(c.clausulas) == 1:
@@ -144,23 +153,29 @@ def actualizar_pred(predicados, clausulas):
                 if not any(c == var for c in predicados[pred]):
                     predicados[pred].append(var)
 
+
+# Elimina clausulas repetidas dentro de la lista de clausulas
+def eliminar_repetidas(clausulas):
+    for i, c1 in enumerate(clausulas):
+        for j, c2 in enumerate(clausulas):
+            if i != j and c1.clausulas == c2.clausulas:
+                clausulas.pop(j)
+    return clausulas
+
+
 # Realizar la refutación de la sentencia.
 def refutacion(axiomas, sentencia):
-    negacion = neg(sentencia)
-    agregar_axioma(axiomas, negacion)
+    agregar_axioma(axiomas, neg(sentencia))
     fnc, predicados = forma_normal_conjuntiva(axiomas)
     clausulas = [Clausula(a.split("∨")) for a in fnc]
-
     clausulas = unificacion(predicados, clausulas)
-    for c in clausulas:
-        print(c.clausulas)
     while hay_clausulas_por_resolver(clausulas):
         clausula1, clausula2 = encontrar_clausulas_por_resolver(clausulas)
         resultado = resolver(clausula1, clausula2)
         if len(resultado.clausulas) and not any(c.clausulas == resultado.clausulas for c in clausulas):
             agregar_clausula(clausulas, resultado)
             actualizar_pred(predicados, clausulas)
-            clausulas = unificacion(predicados, clausulas)
+            clausulas = eliminar_repetidas(unificacion(predicados, clausulas))
         if es_clausula_nula(clausulas):
             return True
     return False

@@ -1,7 +1,7 @@
 from inferencia import *
 
-sentencia = "Odia(Marco, Cesar)"
-axiomas = [
+sentencia1 = "Odia(Marco, Cesar)"
+axiomas1 = [
     "Hombre(Marco)",
     "Pompeyano(Marco)",
     "∀x Pompeyano(x) => Romano(x)",
@@ -32,7 +32,7 @@ axiomas2 = [
     "∀x Gato(x) => Animal(x)"
 ]
 
-print(refutacion(axiomas, sentencia))
+print(refutacion(axiomas1, sentencia1))
 
 
 

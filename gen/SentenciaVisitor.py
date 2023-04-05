@@ -1,6 +1,8 @@
 # Generated from C:/Users/esteb/Documents/Trabajos U/Intro IA/Motor-de-inferencia/gen\Sentencia.g4 by ANTLR 4.11.1
 from antlr4 import *
 
+from .SentenciaLexer import SentenciaLexer
+
 if __name__ is not None and "." in __name__:
     from .SentenciaParser import SentenciaParser
 else:
@@ -27,8 +29,7 @@ def neg(sentencia):
 # This class defines a complete generic visitor for a parse tree produced by SentenciaParser.
 
 class SentenciaVisitor(ParseTreeVisitor):
-
-    predicados = []
+    predicados = {}
 
     # Visit a parse tree produced by SentenciaParser#Forall.
     def visitForall(self, ctx: SentenciaParser.ForallContext):
@@ -72,11 +73,72 @@ class SentenciaVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SentenciaParser#Pred.
     def visitPred(self, ctx: SentenciaParser.PredContext):
-        return ctx.predicado()
+        return self.visit(ctx.predicado())
 
     # Visit a parse tree produced by SentenciaParser#Paren.
     def visitParen(self, ctx: SentenciaParser.ParenContext):
         return self.visit(ctx.exp())
+
+    # Visit a parse tree produced by SentenciaParser#Uni.
+    def visitUni(self, ctx: SentenciaParser.UniContext):
+        clave = ctx.PRED(0).__str__()
+        if clave not in self.predicados:
+            self.predicados[clave] = []
+        if ctx.ID() is None:
+            if not any(c == ctx.PRED(1).__str__() for c in self.predicados[clave]):
+                self.predicados[clave].append(ctx.PRED(1).__str__())
+        #else:
+        #    if not any(c == ctx.ID().__str__() for c in self.predicados[clave]):
+        #        self.predicados[clave].append(ctx.ID().__str__())
+        return ctx.getText()
+
+    # Visit a parse tree produced by SentenciaParser#IDID.
+    def visitIDID(self, ctx: SentenciaParser.IDIDContext):
+        """clave = ctx.PRED().__str__()
+        if clave not in self.predicados:
+            self.predicados[clave] = []
+        v1 = ctx.ID(0).__str__()
+        v2 = ctx.ID(1).__str__()
+        v = (v1, v2)
+        if v not in self.predicados[clave]:
+            self.predicados[clave].append(v)"""
+        return ctx.getText()
+
+    # Visit a parse tree produced by SentenciaParser#IDP.
+    def visitIDP(self, ctx: SentenciaParser.IDPContext):
+        """clave = ctx.PRED(0).__str__()
+        if clave not in self.predicados:
+            self.predicados[clave] = []
+        v1 = ctx.ID().__str__()
+        v2 = ctx.PRED(1).__str__()
+        v = (v1, v2)
+        if v not in self.predicados[clave]:
+            self.predicados[clave].append(v)"""
+        return ctx.getText()
+
+    # Visit a parse tree produced by SentenciaParser#PID.
+    def visitPID(self, ctx: SentenciaParser.PIDContext):
+        """clave = ctx.PRED(0).__str__()
+        if clave not in self.predicados:
+            self.predicados[clave] = []
+        v1 = ctx.PRED(1).__str__()
+        v2 = ctx.ID().__str__()
+        v = (v1, v2)
+        if v not in self.predicados[clave]:
+            self.predicados[clave].append(v)"""
+        return ctx.getText()
+
+    # Visit a parse tree produced by SentenciaParser#PP.
+    def visitPP(self, ctx: SentenciaParser.PPContext):
+        """clave = ctx.PRED(0).__str__()
+        if clave not in self.predicados:
+            self.predicados[clave] = []
+        v1 = ctx.PRED(1).__str__()
+        v2 = ctx.PRED(2).__str__()
+        v = (v1, v2)
+        if v not in self.predicados[clave]:
+            self.predicados[clave].append(v)"""
+        return ctx.getText()
 
 
 del SentenciaParser

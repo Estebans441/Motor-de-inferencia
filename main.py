@@ -34,11 +34,11 @@ curiosidad_tuna = [
 
 p1 = [
     "∀x ∀y IntentaAsesinar(x,y) <=> Odia(x,y)",
-    "Odia(Marco, Cesar)"
+    "IntentaAsesinar(Marco, Cesar)"
 ]
 
 axiomas = marco_cesar
-sentencia = marco_cesar_sentencia
+sentencia = "Odia(Marco,Cesar)"
 print(".....................................")
 print("Axiomas")
 print(".....................................")

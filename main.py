@@ -13,15 +13,15 @@ no_unificacion = [
 
 marco_cesar_sentencia = "Odia(Marco, Cesar)"
 marco_cesar = [
-    "Hombre(Marco)",
-    "Pompeyano(Marco)",
-    "∀x (Pompeyano(x) /or Ateneo(x)) => Romano(x)",
+    "Hombre(Marco) ∧ Pompeyano(Marco) ∧ Hombre(Antonio) ∧ Ateneo(Antonio)",
+    "IntentaAsesinar(Antonio,Cesar)",
+    "∀x (Pompeyano(x) ∨ Ateneo(x)) => Romano(x)",
     "Gobernante(Cesar)",
     "∀x Romano(x) => (Leal(x, Cesar) ∨ Odia(x, Cesar))",
     "∀x ∀y (Hombre(x) ∧ Gobernante(y) ∧ IntentaAsesinar(x, y)) => -Leal(x, y)",
     "IntentaAsesinar(Marco, Cesar)",
-    "IntentaAsesinar(Antonio, Cesar)",
-    "Ateneo(Antonio) /and Hombre(Antonio)"
+    "∀x ∀y (IntentaAsesinar(x, Cesar) ∧ IntentaAsesinar(y, Cesar)) => Complices(x,y)",
+    "∀x ∀y (Odia(x, Cesar) ∧ Odia(y, Cesar)) => Conspiran(x,y)"
 ]
 
 curiosidad_tuna_sentencia = "Mata(Curiosidad, Tuna)"
@@ -35,12 +35,12 @@ curiosidad_tuna = [
 ]
 
 p1 = [
-    "∀x ∀y IntentaAsesinar(x,y) <=> Odia(x,y)",
+    "∀x ∃y IntentaAsesinar(x,y) <=> Odia(x,y)",
     "IntentaAsesinar(Marco, Cesar)"
 ]
 
 axiomas = marco_cesar
-sentencia = "Odia(Antonio,Cesar)"
+sentencia = "Conspiran(Antonio, Marco)"
 print(".....................................")
 print("Axiomas")
 print(".....................................")
@@ -50,14 +50,3 @@ print("________________")
 print(sentencia+" ?")
 print(".....................................")
 print(refutacion(axiomas, sentencia))
-
-"""
-['-Animal(z2)', '-Mata(x,z)', '-Ama(y,z)']
-['-Animal(x)', 'Ama(Jack,x)']
-['Mata(Jack,Tuna)', 'Mata(Curiosidad,Tuna)']
-['Gato(Tuna)']
-['-Gato(x)', 'Animal(x)']
-['-Mata(Curiosidad,Tuna)']
-['Ama(y1,x)', 'Animal(z)']
-['Ama(y1,x)', '-Ama(x,z)']
-"""

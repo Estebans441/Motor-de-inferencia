@@ -93,8 +93,8 @@ class SentenciaVisitor(ParseTreeVisitor):
     # Visit a parse tree produced by SentenciaParser#IDID.
     def visitIDID(self, ctx: SentenciaParser.IDIDContext):
         clave = ctx.PRED().__str__()
-        if clave not in self.predicados:
-            self.predicados[clave] = []
+        if clave not in self.relaciones:
+            self.relaciones[clave] = []
         return ctx.getText()
 
     # Visit a parse tree produced by SentenciaParser#IDP.

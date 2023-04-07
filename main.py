@@ -15,11 +15,13 @@ marco_cesar_sentencia = "Odia(Marco, Cesar)"
 marco_cesar = [
     "Hombre(Marco)",
     "Pompeyano(Marco)",
-    "∀x Pompeyano(x) => Romano(x)",
+    "∀x (Pompeyano(x) /or Ateneo(x)) => Romano(x)",
     "Gobernante(Cesar)",
     "∀x Romano(x) => (Leal(x, Cesar) ∨ Odia(x, Cesar))",
     "∀x ∀y (Hombre(x) ∧ Gobernante(y) ∧ IntentaAsesinar(x, y)) => -Leal(x, y)",
-    "IntentaAsesinar(Marco, Cesar)"
+    "IntentaAsesinar(Marco, Cesar)",
+    "IntentaAsesinar(Antonio, Cesar)",
+    "Ateneo(Antonio) /and Hombre(Antonio)"
 ]
 
 curiosidad_tuna_sentencia = "Mata(Curiosidad, Tuna)"
@@ -38,7 +40,7 @@ p1 = [
 ]
 
 axiomas = marco_cesar
-sentencia = "Odia(Marco,Cesar)"
+sentencia = "Odia(Antonio,Cesar)"
 print(".....................................")
 print("Axiomas")
 print(".....................................")
@@ -48,3 +50,14 @@ print("________________")
 print(sentencia+" ?")
 print(".....................................")
 print(refutacion(axiomas, sentencia))
+
+"""
+['-Animal(z2)', '-Mata(x,z)', '-Ama(y,z)']
+['-Animal(x)', 'Ama(Jack,x)']
+['Mata(Jack,Tuna)', 'Mata(Curiosidad,Tuna)']
+['Gato(Tuna)']
+['-Gato(x)', 'Animal(x)']
+['-Mata(Curiosidad,Tuna)']
+['Ama(y1,x)', 'Animal(z)']
+['Ama(y1,x)', '-Ama(x,z)']
+"""

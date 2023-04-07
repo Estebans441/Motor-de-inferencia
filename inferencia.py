@@ -133,7 +133,6 @@ def unificacion(predicados, relaciones, clausulas: [Clausula]):
                     for cons in relaciones[predicado]:
                         if x == cons[0]:
                             reemplazos[y].append(cons[1])
-
                 if not x[0].isupper() and not y[0].isupper():
                     var = x+","+y
                     if var not in reemplazos:
@@ -181,13 +180,13 @@ def actualizar_pred(predicados, relaciones, clausulas):
             if var[0].isupper() and len(splt) == 1:
                 if not any(c == var for c in predicados[pred]):
                     predicados[pred].append(var)
-            elif len(splt) == 2:
+            """elif len(splt) == 2:
                 x = splt[0]
                 y = splt[1]
                 if x[0].isupper() and y[0].isupper():
                     v =(x, y)
                     if not any(c == v for c in relaciones[pred]):
-                        relaciones[pred].append(v)
+                        relaciones[pred].append(v)"""
 
 
 
@@ -230,5 +229,11 @@ def refutacion(axiomas, sentencia):
             actualizar_pred(predicados, relaciones, clausulas)
             clausulas = eliminar_repetidas(unificacion(predicados, relaciones, clausulas))
         if es_clausula_nula(clausulas):
+            print(relaciones)
+            print(predicados)
+            for c in clausulas:
+                print(c.clausulas)
             return True
+    for c in clausulas:
+        print(c.clausulas)
     return False

@@ -100,15 +100,6 @@ def reemplazar(diccionario: {}, original: [str], copias):
         return
 
 
-# Elimina clausulas repetidas dentro de la lista de clausulas
-def eliminar_repetidas(clausulas):
-    for i, c1 in enumerate(clausulas):
-        for j, c2 in enumerate(clausulas):
-            if i != j and c1.clausulas == c2.clausulas:
-                clausulas.pop(j)
-    return clausulas
-
-
 def distributiva(clausulas):
     for i, c in enumerate(clausulas):
         for c1 in c.clausulas:

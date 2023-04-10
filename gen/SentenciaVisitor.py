@@ -29,8 +29,6 @@ def neg(sentencia):
 # This class defines a complete generic visitor for a parse tree produced by SentenciaParser.
 
 class SentenciaVisitor(ParseTreeVisitor):
-    predicados = {}
-    relaciones = {}
 
     # Visit a parse tree produced by SentenciaParser#Forall.
     def visitForall(self, ctx: SentenciaParser.ForallContext):
@@ -82,45 +80,22 @@ class SentenciaVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by SentenciaParser#Uni.
     def visitUni(self, ctx: SentenciaParser.UniContext):
-        clave = ctx.PRED(0).__str__()
-        if clave not in self.predicados:
-            self.predicados[clave] = []
-        if ctx.ID() is None:
-            if not any(c == ctx.PRED(1).__str__() for c in self.predicados[clave]):
-                self.predicados[clave].append(ctx.PRED(1).__str__())
         return ctx.getText()
 
     # Visit a parse tree produced by SentenciaParser#IDID.
     def visitIDID(self, ctx: SentenciaParser.IDIDContext):
-        clave = ctx.PRED().__str__()
-        if clave not in self.relaciones:
-            self.relaciones[clave] = []
         return ctx.getText()
 
     # Visit a parse tree produced by SentenciaParser#IDP.
     def visitIDP(self, ctx: SentenciaParser.IDPContext):
-        clave = ctx.PRED(0).__str__()
-        if clave not in self.relaciones:
-            self.relaciones[clave] = []
         return ctx.getText()
 
     # Visit a parse tree produced by SentenciaParser#PID.
     def visitPID(self, ctx: SentenciaParser.PIDContext):
-        clave = ctx.PRED(0).__str__()
-        if clave not in self.relaciones:
-            self.relaciones[clave] = []
         return ctx.getText()
 
     # Visit a parse tree produced by SentenciaParser#PP.
     def visitPP(self, ctx: SentenciaParser.PPContext):
-        clave = ctx.PRED(0).__str__()
-        if clave not in self.relaciones:
-            self.relaciones[clave] = []
-        v1 = ctx.PRED(1).__str__()
-        v2 = ctx.PRED(2).__str__()
-        v = (v1, v2)
-        if v not in self.relaciones[clave]:
-            self.relaciones[clave].append(v)
         return ctx.getText()
 
 

@@ -26,7 +26,7 @@ def visitar(axioma):
             SentenciaLexer(
                 InputStream(
                     axioma_n)))).sentencia())
-    return fnc, visitor.predicados, visitor.relaciones
+    return fnc
 
 
 # Convertir la lista de axiomas a Forma Normal Conjuntiva.
@@ -35,17 +35,15 @@ def visitar(axioma):
 def forma_normal_conjuntiva(axiomas):
     # código para convertir a FNC
     axiomas_n = []
-    predicados = {}
-    relaciones = {}
     for i in range(0, len(axiomas)):
-        ap, predicados, relaciones = visitar(axiomas[i])
+        ap = visitar(axiomas[i])
         ap = ap.replace("#", str(i + 1))
         n_ap = ap.split("/bicond")
         for n in n_ap:
             if n[0] == "(":
                 n = n[1:-1]
             axiomas_n.append(n)
-    return axiomas_n, predicados, relaciones
+    return axiomas_n
 
 
 # Verificar si hay cláusulas por resolver.
@@ -64,23 +62,9 @@ def encontrar_clausulas_por_resolver(clausulas: [Clausula]):
                 for c1 in clausulas[i].clausulas:
                     for c2 in clausulas[j].clausulas:
                         # Si c1 tiene un literal que niega un literal de c2
-                        if c1 == neg(c2):
+                        if c1.split("(", 1)[0] == neg(c2.split("(", 1)[0]):
                             return clausulas[i], clausulas[j]
     return Clausula([]), Clausula([])
-
-
-# Generar el resultado de la resolución.
-def resolver(clausula1, clausula2):
-    # Se busca los dos literales que se niegan para crear el resultado en el que se eliminan
-    c1_n, c2_n = [], []
-    for c1 in clausula1.clausulas:
-        for c2 in clausula2.clausulas:
-            if c1 == neg(c2):
-                c1_n = [c for c in clausula1.clausulas if c != c1]
-                c2_n = [c for c in clausula2.clausulas if c != c2]
-
-    resultado = Clausula(c1_n + c2_n)
-    return resultado
 
 
 # Agregar una nueva cláusula a la lista.
@@ -100,57 +84,6 @@ def es_clausula_nula(clausulas: [Clausula]):
     return False
 
 
-# Realizar la unificacion de variables
-def unificacion(predicados, relaciones, clausulas: [Clausula]):
-    nuevas_clausulas = [c for c in clausulas]
-    for c in clausulas:
-        # Busqueda de variables dentro de las clausulas y determinacion de su posible reemplazo (unificacion)
-        reemplazos = {}
-        for c1 in c.clausulas:
-            literal = c1.replace(")", "").replace("-", "").split("(")
-            predicado = literal[0]
-            variable = literal[1]
-            # Predicados de una variable
-            if predicado in predicados and not variable[0].isupper() and len(variable.split(",")) == 1:
-                if variable not in reemplazos:
-                    reemplazos[variable] = []
-                for cons in predicados[predicado]:
-                    if cons not in reemplazos[variable]:
-                        reemplazos[variable].append(cons)
-            # Predicados multivariable
-            elif predicado in relaciones and len(variable.split(",")) == 2:
-                x = variable.split(",")[0]
-                y = variable.split(",")[1]
-                if not x[0].isupper() and y[0].isupper():
-                    if x not in reemplazos:
-                        reemplazos[x] = []
-                    for cons in relaciones[predicado]:
-                        if y == cons[1]:
-                            reemplazos[x].append(cons[0])
-                if not y[0].isupper() and x[0].isupper():
-                    if y not in reemplazos:
-                        reemplazos[y] = []
-                    for cons in relaciones[predicado]:
-                        if x == cons[0]:
-                            reemplazos[y].append(cons[1])
-                if not x[0].isupper() and not y[0].isupper():
-                    var = x+","+y
-                    if var not in reemplazos:
-                        reemplazos[var] = []
-                    for cons in relaciones[predicado]:
-                        ap = cons[0]+","+cons[1]
-                        reemplazos[var].append(ap)
-
-        # Reemplazo de la variable dentro de la clausula
-        copias = []
-        reemplazar(reemplazos, c.clausulas, copias)
-        # Se agregan las clausulas con las variables unificadas si no se ha agregado ya
-        for copia in copias:
-            if copia != c.clausulas:
-                nuevas_clausulas.append(Clausula(copia))
-    return nuevas_clausulas
-
-
 # Reemplaza una variable con sus posibles valores almacenados en el diccionario recursivamente
 def reemplazar(diccionario: {}, original: [str], copias):
     if len(diccionario) == 0:
@@ -165,38 +98,6 @@ def reemplazar(diccionario: {}, original: [str], copias):
             new_dic.pop(clave)
             reemplazar(new_dic, c_cpy, copias)
         return
-
-
-# Si se encuentra una clausula con solo un literal que define una nueva constante, se actualiza el diccionario con los
-# predicados para volver a realizar la unificacion
-def actualizar_pred(predicados, relaciones, clausulas):
-    for c in clausulas:
-        if len(c.clausulas) == 1:
-            c1 = c.clausulas[0]
-            literal = c1.replace(")", "").replace("-", "").split("(")
-            pred = literal[0]
-            var = literal[1]
-            splt = var.split(",")
-            if var[0].isupper() and len(splt) == 1:
-                if not any(c == var for c in predicados[pred]):
-                    predicados[pred].append(var)
-            """elif len(splt) == 2:
-                x = splt[0]
-                y = splt[1]
-                if x[0].isupper() and y[0].isupper():
-                    v =(x, y)
-                    if not any(c == v for c in relaciones[pred]):
-                        relaciones[pred].append(v)"""
-
-
-
-# Elimina clausulas repetidas dentro de la lista de clausulas
-def eliminar_repetidas(clausulas):
-    for i, c1 in enumerate(clausulas):
-        for j, c2 in enumerate(clausulas):
-            if i != j and c1.clausulas == c2.clausulas:
-                clausulas.pop(j)
-    return clausulas
 
 
 def distributiva(clausulas):
@@ -214,26 +115,95 @@ def distributiva(clausulas):
                 clausulas.pop(i)
 
 
-# Realizar la refutación de la sentencia.
+# Generar el resultado de la resolución.
+def resolver(clausula1, clausula2):
+    # Se busca los dos literales que se niegan para crear el resultado en el que se eliminan
+    unificados = unificacion(clausula1.clausulas, clausula2.clausulas)
+    resultado = []
+    for u in unificados:
+        resuelto = False
+        n_u = []
+        for c1 in u:
+            esta = False
+            for c2 in u:
+                if c1 == neg(c2):
+                    esta = True
+                    resuelto = True
+            if not esta:
+                n_u.append(c1)
+        if resuelto:
+            resultado.append(Clausula([n for n in n_u]))
+    return resultado
+
+
+def unificacion(clausula1: [str], clausula2: [str]):
+    reemplazos = {}
+    copias = []
+    for c1 in clausula1:
+        for c2 in clausula2:
+            splt1 = c1.replace(")", "").replace("-", "").split("(", 1)
+            splt2 = c2.replace(")", "").replace("-", "").split("(", 1)
+            pred1 = splt1[0]
+            pred2 = splt2[0]
+            if pred1 == pred2:
+                if len(splt1[1].split(",")) == 1:
+                    v1 = splt1[1]
+                    v2 = splt2[1]
+                    if v1[0].isupper() and not v2[0].isupper():
+                        if v2 not in reemplazos:
+                            reemplazos[v2] = []
+                        reemplazos[v2].append(v1)
+                    elif v2[0].isupper() and not v1[0].isupper():
+                        if v1 not in reemplazos:
+                            reemplazos[v1] = []
+                        reemplazos[v1].append(v2)
+                else:
+                    v11 = splt1[1].split(",")[0]
+                    v12 = splt1[1].split(",")[1]
+                    v21 = splt2[1].split(",")[0]
+                    v22 = splt2[1].split(",")[1]
+                    if v11[0].isupper() and v12[0].isupper() and (not v21[0].isupper()) and (not v22[0].isupper()):
+                        copias.append([c.replace(v21, v11).replace(v22, v12) for c in clausula1] +
+                                      [c.replace(v21, v11).replace(v22, v12) for c in clausula2])
+                    elif (not v11[0].isupper()) and (not v12[0].isupper()) and v21[0].isupper() and v22[0].isupper():
+                        copias.append([c.replace(v11, v21).replace(v12, v22) for c in clausula1] +
+                                      [c.replace(v11, v21).replace(v22, v22) for c in clausula2])
+                    elif v11[0].isupper() and (not v21[0].isupper()) and (not v22[0].isupper()):
+                        if v21 not in reemplazos:
+                            reemplazos[v21] = []
+                        reemplazos[v21].append(v11)
+                    elif (not v11[0].isupper()) and (not v12[0].isupper()) and v21[0].isupper():
+                        if v11 not in reemplazos:
+                            reemplazos[v11] = []
+                        reemplazos[v11].append(v21)
+                    elif v12[0].isupper() and (not v21[0].isupper()) and (not v22[0].isupper):
+                        if v22 not in reemplazos:
+                            reemplazos[v22] = []
+                        reemplazos[v22].append(v12)
+                    elif (not v11[0].isupper()) and (not v12[0].isupper()) and v22[0].isupper():
+                        if v12 not in reemplazos:
+                            reemplazos[v12] = []
+                        reemplazos[v12].append(v22)
+
+    # Reemplazo de la variable dentro de la clausula
+    # print("Para " + str(clausula1) + " " + str(clausula2))
+    # print(reemplazos)
+    reemplazar(reemplazos, clausula1 + clausula2, copias)
+    return copias
+
+
 def refutacion(axiomas, sentencia):
     agregar_axioma(axiomas, neg(sentencia))
-    fnc, predicados, relaciones = forma_normal_conjuntiva(axiomas)
+    fnc = forma_normal_conjuntiva(axiomas)
     clausulas = [Clausula(a.split("∨")) for a in fnc]
     distributiva(clausulas)
-    clausulas = unificacion(predicados, relaciones, clausulas)
     while hay_clausulas_por_resolver(clausulas):
         clausula1, clausula2 = encontrar_clausulas_por_resolver(clausulas)
-        resultado = resolver(clausula1, clausula2)
-        if len(resultado.clausulas) and not any(c.clausulas == resultado.clausulas for c in clausulas):
-            agregar_clausula(clausulas, resultado)
-            actualizar_pred(predicados, relaciones, clausulas)
-            clausulas = eliminar_repetidas(unificacion(predicados, relaciones, clausulas))
+        resultados = resolver(clausula1, clausula2)
+        for resultado in resultados:
+            if len(resultado.clausulas) > 0 and not any(c.clausulas == resultado.clausulas for c in clausulas):
+                agregar_clausula(clausulas, resultado)
+                clausulas = sorted(clausulas, key=lambda c: len(c.clausulas))
         if es_clausula_nula(clausulas):
-            print(relaciones)
-            print(predicados)
-            for c in clausulas:
-                print(c.clausulas)
             return True
-    for c in clausulas:
-        print(c.clausulas)
     return False
